@@ -103,6 +103,24 @@
     window.EJS_color = "#1aafff";
     window.EJS_volume = 0.5;
     window.EJS_defaultOptions = { "save-state-slot": QUICK_SLOT, "save-state-location": "browser" };
+    // Tay cầm ảo cho điện thoại: EmulatorJS có sẵn tay cầm cảm ứng, nhưng bản mặc định
+    // của nhân PSX thiếu nút vai L1/L2/R1/R2. Đặt layout PSX đầy đủ TRƯỚC khi nạp loader
+    // (định dạng EJS_VirtualGamepadSettings của EmulatorJS; input_value là chỉ số nút
+    // trong bảng điều khiển mặc định: 0=✕ Cross, 8=○ Circle, 1=□ Square, 9=△ Triangle,
+    // 10=L1, 11=R1, 12=L2, 13=R2, 2=Select, 3=Start, 4-7=D-pad).
+    window.EJS_VirtualGamepadSettings = [
+      { type: "button", text: "L1", id: "psx-l1", location: "top", left: 12, top: -40, fontSize: 16, bold: true, block: true, input_value: 10 },
+      { type: "button", text: "L2", id: "psx-l2", location: "top", left: 100, top: -40, fontSize: 16, bold: true, block: true, input_value: 12 },
+      { type: "button", text: "R1", id: "psx-r1", location: "top", right: 100, top: -40, fontSize: 16, bold: true, block: true, input_value: 11 },
+      { type: "button", text: "R2", id: "psx-r2", location: "top", right: 12, top: -40, fontSize: 16, bold: true, block: true, input_value: 13 },
+      { type: "zone", id: "psx-stick", location: "left", left: "52%", top: "42%", joystickInput: false, color: "blue", inputValues: [4, 5, 6, 7] },
+      { type: "button", text: "△", id: "psx-tri", location: "right", left: 84, top: 34, fontSize: 28, bold: true, input_value: 9 },
+      { type: "button", text: "○", id: "psx-cir", location: "right", left: 132, top: 88, fontSize: 28, bold: true, input_value: 8 },
+      { type: "button", text: "✕", id: "psx-cross", location: "right", left: 84, top: 122, fontSize: 28, bold: true, input_value: 0 },
+      { type: "button", text: "□", id: "psx-sq", location: "right", left: 36, top: 88, fontSize: 28, bold: true, input_value: 1 },
+      { type: "button", text: "SELECT", id: "psx-sel", location: "center", left: -36, bottom: 2, fontSize: 12, bold: true, block: true, input_value: 2 },
+      { type: "button", text: "START", id: "psx-start", location: "center", left: 64, bottom: 2, fontSize: 12, bold: true, block: true, input_value: 3 }
+    ];
     window.EJS_Buttons = {
       playPause: true, restart: true, fullscreen: true, settings: true,
       saveState: true, loadState: true, quickSave: true, quickLoad: true,
@@ -122,6 +140,7 @@
        "btn-pause", "btn-ff", "btn-fullscreen", "btn-export-srm", "btn-import-srm"]
         .forEach(function (id) { $(id).disabled = false; });
       applyCheatsToEmulator();
+      styleVirtualGamepad();
       setStatus("Đang chơi: " + gameName + ". Bấm vào màn hình game để điều khiển.", "ok");
     };
 
@@ -342,6 +361,40 @@
   $("cheat-add-btn").addEventListener("click", addCheat);
   cheatCodeInput.addEventListener("keydown", function (e) { if (e.key === "Enter") addCheat(); });
   $("cheat-apply-btn").addEventListener("click", applyCheatsToEmulator);
+
+  // ---------- Tay cầm ảo (điện thoại) ----------
+  // Tô màu nút mặt của tay cầm ảo theo màu PlayStation. EmulatorJS vẽ lại overlay
+  // khi xoay màn hình / đổi fullscreen, nên chạy lại sau mỗi lần thay đổi.
+  var FACE_COLORS = { "△": "#2ecc71", "○": "#e53935", "✕": "#1e88e5", "□": "#8e44ad" };
+  function styleVirtualGamepad() {
+    try {
+      var root = document.getElementById("game");
+      if (!root) return;
+      var els = root.querySelectorAll("div");
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        var label = (el.textContent || "").trim();
+        var color = FACE_COLORS[label];
+        if (!color) continue;
+        // Chỉ tô nút lá (không tô chữ trong nút khác): nút mặt là phần tử nhỏ nhất chứa nhãn
+        if (el.children.length > 0) continue;
+        el.style.color = color;
+        el.style.borderColor = color;
+      }
+    } catch (e) { /* Tay cầm ảo không hiện trên máy tính: bỏ qua */ }
+  }
+  if (window.MutationObserver && document.getElementById("game")) {
+    var vpadObserver = new MutationObserver(function () { styleVirtualGamepad(); });
+    vpadObserver.observe(document.getElementById("game"), { childList: true, subtree: true });
+  }
+  window.addEventListener("orientationchange", function () { setTimeout(styleVirtualGamepad, 300); });
+  window.addEventListener("resize", function () { styleVirtualGamepad(); });
+
+  // Hiện gợi ý chơi bằng cảm ứng trên thiết bị có màn hình chạm
+  if ("ontouchstart" in window || (window.matchMedia && matchMedia("(pointer: coarse)").matches)) {
+    var touchHint = $("touch-hint");
+    if (touchHint) touchHint.hidden = false;
+  }
 
   renderCheatList();
 })();

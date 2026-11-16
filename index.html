@@ -65,6 +65,7 @@
       <button class="btn" id="btn-fullscreen" disabled>⛶ Toàn màn hình</button>
     </div>
     <p class="hint">Save state = ảnh chụp toàn bộ trạng thái game (kể cả giữa trận), nạp lại là chơi tiếp đúng chỗ đó. Khác với thẻ nhớ (memory card) lưu trong game.</p>
+    <p class="hint" id="touch-hint" hidden>📱 <strong>Chơi trên điện thoại:</strong> tay cầm ảo (D-pad + △ ○ ✕ □ + L1/L2/R1/R2 + Start/Select) tự hiện trên màn hình sau khi game chạy. Xoay ngang điện thoại để màn hình to hơn. Tay cầm Bluetooth kết nối với điện thoại cũng dùng được. Nếu không thấy tay cầm ảo, bật trong ⚙️ Cài đặt của trình giả lập → Virtual Gamepad.</p>
     <div class="controls">
       <button class="btn btn-secondary" id="btn-export-srm" disabled title="Xuất file thẻ nhớ (.srm) của game đang chơi">💾 Xuất thẻ nhớ</button>
       <button class="btn btn-secondary" id="btn-import-srm" disabled title="Nạp file thẻ nhớ (.srm) vào game">📥 Nạp thẻ nhớ</button>
@@ -97,7 +98,8 @@
       <li><strong>Nạp game</strong> ở trên rồi bấm <strong>Bắt đầu chơi</strong>. Game chạy hoàn toàn trên máy bạn bằng EmulatorJS (nhân PCSX ReARMed).</li>
       <li><strong>Lưu nhanh:</strong> bấm <strong>Lưu nhanh</strong> bất cứ lúc nào để chụp trạng thái game; <strong>Nạp nhanh</strong> để quay lại đúng chỗ đó. Muốn giữ save lâu dài thì bấm <strong>Tải file save</strong> để lưu file <code>.state</code> về máy.</li>
       <li><strong>Cheat:</strong> thêm mã GameShark trước hoặc trong lúc chơi, bật mã rồi bấm <strong>Áp dụng mã</strong>.</li>
-      <li><strong>Phím:</strong> dùng bàn phím như tay cầm PS1 (mũi tên + X/Z…). Bấm vào màn hình game rồi chỉnh phím trong nút ⚙️ Cài đặt của trình giả lập.</li>
+      <li><strong>Phím (máy tính):</strong> mũi tên = D-pad, <strong>X</strong> = ✕, <strong>Z</strong> = ○, <strong>A</strong> = □, <strong>S</strong> = △, <strong>Q/E</strong> = L1/R1, <strong>Tab/R</strong> = L2/R2, <strong>Enter</strong> = Start, <strong>V</strong> = Select. Đổi phím trong nút ⚙️ Cài đặt của trình giả lập.</li>
+      <li><strong>Điện thoại / máy tính bảng:</strong> tay cầm ảo tự hiện sau khi game chạy (D-pad bên trái, △ ○ ✕ □ bên phải, L1/L2/R1/R2 ở phía trên, Start/Select ở giữa). Xoay ngang máy để màn hình to hơn; tay cầm Bluetooth cũng dùng được.</li>
     </ol>
     <h3>⚖️ Lưu ý bản quyền</h3>
     <p class="desc">Trang này <strong>không kèm game hay BIOS</strong>. Bạn cần tự dump đĩa game và BIOS từ máy PS1 của mình. Chỉ dùng cho game bạn sở hữu hợp pháp.</p>

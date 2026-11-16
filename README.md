@@ -28,6 +28,13 @@ tải lên máy chủ nào cả.
 - **Điều khiển thêm:** tạm dừng, tua nhanh, toàn màn hình; thanh công cụ của
   EmulatorJS có sẵn nút Cheat, Cài đặt phím, Chụp màn hình…
 - **Giao diện tiếng Việt** (`EJS_language = 'vi-VN'`).
+- **📱 Chơi được cả máy tính lẫn điện thoại:** giao diện responsive (điện thoại
+  xếp 1 cột, màn hình game lên đầu, nút bấm đủ lớn để chạm); trên điện thoại,
+  tay cầm ảo PSX tự hiện sau khi game chạy — D-pad bên trái, △ ○ ✕ □ bên phải,
+  L1/L2/R1/R2 ở phía trên, Start/Select ở giữa (đặt qua
+  `EJS_VirtualGamepadSettings`, vì bản mặc định của nhân PSX thiếu nút vai).
+  Xoay ngang máy để màn hình to hơn; tay cầm Bluetooth kết nối qua Gamepad API
+  cũng dùng được.
 
 ## 🚀 Dùng thử
 

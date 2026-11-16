@@ -48,8 +48,27 @@ body {
   margin: 0 auto;
 }
 @media (max-width: 900px) {
-  .layout { grid-template-columns: 1fr; }
+  .layout { grid-template-columns: 1fr; padding: 12px; }
+  .topbar { padding: 12px 16px; gap: 8px; }
+  .logo { font-size: 22px; }
+  /* Điện thoại: màn hình game lên đầu, phần nạp game xuống dưới */
+  .player-panel { order: -1; grid-row: auto; }
+  .panel { padding: 12px 14px; }
+  .dropzone { padding: 16px 10px; }
+  .btn { min-height: 44px; padding: 10px 14px; font-size: 15px; }
+  .btn-big { font-size: 17px; }
+  .cheat-form input { flex: 1 1 100%; }
+  .cheat-list .cheat-name { min-width: 0; }
 }
+
+/* Điện thoại xoay ngang: màn hình game không cao quá, vừa khung nhìn */
+@media (max-width: 900px) and (orientation: landscape) {
+  .screen-wrap { width: min(100%, calc((100vh - 190px) * 4 / 3)); margin: 0 auto; }
+}
+
+/* Chống zoom khi chạm đúp vào nút, cuộn trang mượt trên cảm ứng */
+body { touch-action: manipulation; }
+.btn, .dropzone { -webkit-tap-highlight-color: transparent; }
 
 .panel {
   background: var(--panel);
