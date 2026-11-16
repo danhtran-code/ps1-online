@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PS1 Online — Chơi game PlayStation 1 trên trình duyệt</title>
+<meta name="description" content="Chơi game PS1 ngay trên trình duyệt: tải file ISO/BIN của bạn lên, kèm cheat engine (GameShark) và nút lưu/nạp nhanh save state.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">🎮 <span>PS1 Online</span></div>
+  <div class="tagline">Chơi game PlayStation 1 ngay trên trình duyệt — không cần cài đặt</div>
+</header>
+
+<main class="layout">
+  <!-- Cột trái: nạp game + điều khiển -->
+  <section class="panel" id="setup-panel">
+    <h2>1. Nạp game</h2>
+    <div class="dropzone" id="dropzone" tabindex="0">
+      <div class="drop-icon">📀</div>
+      <p><strong>Kéo thả file game vào đây</strong><br>hoặc bấm để chọn file</p>
+      <p class="hint">Hỗ trợ: .iso .bin .cue .img .mdf .pbp .chd .zip (chứa đĩa game)</p>
+      <input type="file" id="game-input" accept=".iso,.bin,.cue,.img,.mdf,.pbp,.chd,.zip,.toc,.cbn,.m3u,.ccd,.exe" hidden>
+    </div>
+    <div class="file-row" id="game-file-row" hidden>
+      <span class="file-label">💿 Game:</span>
+      <span class="file-name" id="game-file-name">—</span>
+      <span class="file-size" id="game-file-size"></span>
+    </div>
+
+    <h2>2. BIOS <span class="optional">(không bắt buộc)</span></h2>
+    <p class="desc">Một số game chạy ổn không cần BIOS (nhờ chế độ HLE). Nếu game không boot, hãy nạp file BIOS PS1 của bạn (<code>scph5500.bin</code> / <code>scph5501.bin</code> / <code>scph5502.bin</code>).</p>
+    <label class="btn btn-secondary" for="bios-input">📁 Chọn file BIOS…</label>
+    <input type="file" id="bios-input" accept=".bin" hidden>
+    <div class="file-row" id="bios-file-row" hidden>
+      <span class="file-label">🔧 BIOS:</span>
+      <span class="file-name" id="bios-file-name">—</span>
+    </div>
+
+    <button class="btn btn-primary btn-big" id="start-btn" disabled>▶ Bắt đầu chơi</button>
+    <button class="btn btn-secondary" id="change-game-btn" hidden>↺ Đổi game khác</button>
+    <p class="status" id="status">Chưa chọn game. File game chỉ chạy trên máy của bạn, không tải lên máy chủ.</p>
+  </section>
+
+  <!-- Cột phải: màn hình game + điều khiển nhanh -->
+  <section class="panel player-panel">
+    <h2>Màn hình game <span class="game-title" id="current-game"></span></h2>
+    <div class="screen-wrap">
+      <div id="game"></div>
+      <div class="screen-empty" id="screen-empty">
+        <div class="empty-icon">🕹️</div>
+        <p>Chọn file game rồi bấm <strong>Bắt đầu chơi</strong></p>
+      </div>
+    </div>
+
+    <div class="controls" id="controls">
+      <button class="btn btn-save" id="btn-quicksave" disabled title="Lưu nhanh vào khe 1 (lưu trong trình duyệt)">💾 Lưu nhanh</button>
+      <button class="btn btn-save" id="btn-quickload" disabled title="Nạp lại bản lưu nhanh ở khe 1">📂 Nạp nhanh</button>
+      <button class="btn" id="btn-download-state" disabled title="Tải file save state (.state) về máy để giữ lại hoặc chia sẻ">⬇️ Tải file save</button>
+      <button class="btn" id="btn-upload-state" disabled title="Nạp lại file save state (.state) đã tải về trước đó">⬆️ Nạp file save</button>
+      <input type="file" id="state-input" accept=".state" hidden>
+      <button class="btn" id="btn-pause" disabled>⏸ Tạm dừng</button>
+      <button class="btn" id="btn-ff" disabled title="Tua nhanh">⏩ Tua nhanh</button>
+      <button class="btn" id="btn-fullscreen" disabled>⛶ Toàn màn hình</button>
+    </div>
+    <p class="hint">Save state = ảnh chụp toàn bộ trạng thái game (kể cả giữa trận), nạp lại là chơi tiếp đúng chỗ đó. Khác với thẻ nhớ (memory card) lưu trong game.</p>
+    <div class="controls">
+      <button class="btn btn-secondary" id="btn-export-srm" disabled title="Xuất file thẻ nhớ (.srm) của game đang chơi">💾 Xuất thẻ nhớ</button>
+      <button class="btn btn-secondary" id="btn-import-srm" disabled title="Nạp file thẻ nhớ (.srm) vào game">📥 Nạp thẻ nhớ</button>
+      <input type="file" id="srm-input" accept=".srm" hidden>
+    </div>
+  </section>
+
+  <!-- Cheat engine -->
+  <section class="panel cheat-panel">
+    <h2>🎩 Cheat Engine <span class="optional">(GameShark)</span></h2>
+    <p class="desc">Thêm mã GameShark cho game PS1. Mỗi mã gồm 8 ký tự hex địa chỉ + giá trị, nhiều dòng nối bằng dấu <code>+</code> (ví dụ: <code>80128FB4+00C8</code>). Mã bật sẽ tự áp dụng khi game chạy.</p>
+    <div class="cheat-form">
+      <input type="text" id="cheat-name" placeholder="Tên mã (vd: Máu vô hạn)" maxlength="60">
+      <input type="text" id="cheat-code" placeholder="Mã GameShark (vd: 8007E7C8+270F)" maxlength="200" spellcheck="false">
+      <button class="btn btn-primary" id="cheat-add-btn">＋ Thêm mã</button>
+    </div>
+    <ul class="cheat-list" id="cheat-list">
+      <li class="cheat-empty">Chưa có mã nào. Mã được lưu trên trình duyệt của bạn, theo từng game.</li>
+    </ul>
+    <p class="hint">Mẹo: bật/tắt mã rồi bấm <strong>Áp dụng mã</strong> để đổi ngay trong lúc chơi. Một số mã cần khởi động lại game mới tắt hẳn.</p>
+    <button class="btn btn-primary" id="cheat-apply-btn">✔ Áp dụng mã</button>
+    <p class="hint">Hoặc dùng nút <strong>Cheat</strong> có sẵn trên thanh công cụ của trình giả lập để quản lý mã.</p>
+  </section>
+
+  <!-- Hướng dẫn -->
+  <section class="panel help-panel">
+    <h2>❓ Cách dùng</h2>
+    <ol>
+      <li><strong>Chuẩn bị file game:</strong> file ảnh đĩa PS1 của bạn (<code>.iso</code>, <code>.bin</code> + <code>.cue</code>, <code>.pbp</code>, <code>.chd</code>…), có thể nén trong <code>.zip</code>.</li>
+      <li><strong>Nạp game</strong> ở trên rồi bấm <strong>Bắt đầu chơi</strong>. Game chạy hoàn toàn trên máy bạn bằng EmulatorJS (nhân PCSX ReARMed).</li>
+      <li><strong>Lưu nhanh:</strong> bấm <strong>Lưu nhanh</strong> bất cứ lúc nào để chụp trạng thái game; <strong>Nạp nhanh</strong> để quay lại đúng chỗ đó. Muốn giữ save lâu dài thì bấm <strong>Tải file save</strong> để lưu file <code>.state</code> về máy.</li>
+      <li><strong>Cheat:</strong> thêm mã GameShark trước hoặc trong lúc chơi, bật mã rồi bấm <strong>Áp dụng mã</strong>.</li>
+      <li><strong>Phím:</strong> dùng bàn phím như tay cầm PS1 (mũi tên + X/Z…). Bấm vào màn hình game rồi chỉnh phím trong nút ⚙️ Cài đặt của trình giả lập.</li>
+    </ol>
+    <h3>⚖️ Lưu ý bản quyền</h3>
+    <p class="desc">Trang này <strong>không kèm game hay BIOS</strong>. Bạn cần tự dump đĩa game và BIOS từ máy PS1 của mình. Chỉ dùng cho game bạn sở hữu hợp pháp.</p>
+  </section>
+</main>
+
+<footer>
+  PS1 Online · Chạy bằng <a href="https://emulatorjs.org" target="_blank" rel="noopener">EmulatorJS</a> (nhân PCSX ReARMed) · Mã nguồn mở trên GitHub
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
